@@ -19,55 +19,36 @@
         <div class="spacer"></div>
 
         <div class="note-colors">
-          <div class="dot" 
-               (click)="setNoteColor('#FFF9DB')" 
-               [class.active]="selectedNoteColor === '#FFF9DB'"
-               style="background-color: #FFF9DB"></div>
-          <div class="dot" 
-               (click)="setNoteColor('#E7F5FF')" 
-               [class.active]="selectedNoteColor === '#E7F5FF'"
-               style="background-color: #E7F5FF"></div>
-          <div class="dot" 
-               (click)="setNoteColor('#EBFBEE')" 
-               [class.active]="selectedNoteColor === '#EBFBEE'"
-               style="background-color: #EBFBEE"></div>
-          <div class="dot" 
-               (click)="setNoteColor('#F3F0FF')" 
-               [class.active]="selectedNoteColor === '#F3F0FF'"
-               style="background-color: #F3F0FF"></div>
-          <div class="dot" 
-               (click)="setNoteColor('#FFF0F6')" 
-               [class.active]="selectedNoteColor === '#FFF0F6'"
-               style="background-color: #FFF0F6"></div>
+          <div class="dot" (click)="setNoteColor('#FFF9DB')" [class.active]="selectedNoteColor === '#FFF9DB'" style="background-color: #FFF9DB"></div>
+          <div class="dot" (click)="setNoteColor('#E7F5FF')" [class.active]="selectedNoteColor === '#E7F5FF'" style="background-color: #E7F5FF"></div>
+          <div class="dot" (click)="setNoteColor('#EBFBEE')" [class.active]="selectedNoteColor === '#EBFBEE'" style="background-color: #EBFBEE"></div>
+          <div class="dot" (click)="setNoteColor('#F3F0FF')" [class.active]="selectedNoteColor === '#F3F0FF'" style="background-color: #F3F0FF"></div>
+          <div class="dot" (click)="setNoteColor('#FFF0F6')" [class.active]="selectedNoteColor === '#FFF0F6'" style="background-color: #FFF0F6"></div>
         </div>
       </div>
 
       <mat-divider></mat-divider>
 
-      <div #editor 
-           contenteditable="true" 
-           class="note-editor" 
-           (input)="updateDescription()"
-           placeholder="Escribe los detalles aquí...">
+      <div #editor contenteditable="true" class="note-editor" (input)="updateDescription()" placeholder="Escribe los detalles aquí...">
       </div>
 
       <div class="note-actions">
-        <button *ngIf="isEditing" 
-                mat-button 
-                type="button" 
-                (click)="onCancel()" 
-                class="btn-cancel">
+        <button *ngIf="isEditing" mat-button type="button" (click)="onCancel()" class="btn-cancel">
           Cancelar
         </button>
 
-        <button mat-flat-button 
-                class="btn-save" 
-                type="submit" 
-                [disabled]="taskForm.invalid">
+        <button mat-flat-button class="btn-save" type="submit" [disabled]="taskForm.invalid || loading">
           <mat-icon>{{ isEditing ? 'update' : 'add' }}</mat-icon>
           {{ isEditing ? 'Actualizar Nota' : 'Guardar Tarea' }}
         </button>
       </div>
     </form>
   </mat-card>
+</div>
+
+<div class="loading-overlay" *ngIf="loading" [@fadeInOut]>
+  <div class="spinner-wrapper">
+    <mat-progress-spinner mode="indeterminate" diameter="50" color="accent"></mat-progress-spinner>
+    <p class="loading-text">Guardando cambios...</p>
+  </div>
 </div>

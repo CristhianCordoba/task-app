@@ -1,45 +1,46 @@
 <div class="login-container">
-    <div class="login-box" [@fadeInCard]>
+  <div class="login-box" [@fadeInCard]>
+    <div class="login-left">
+      <div class="header-text">
+        <h2>¡Hola!</h2>
+        <p>Inicia sesión en tu cuenta</p>
+      </div>
 
-        <div class="login-left">
-            <div class="header-text">
-                <h2>Hola!</h2>
-                <p>Inicia sesión en tu cuenta</p>
-            </div>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width custom-input">
+          <mat-icon matPrefix>mail_outline</mat-icon>
+          <input matInput type="email" formControlName="email" placeholder="Correo electrónico" [errorStateMatcher]="matcher" />
 
-            <form [formGroup]="form" (ngSubmit)="submit()" >
-                <mat-form-field appearance="outline" class="full-width custom-input">
-                    <mat-icon matPrefix>mail_outline</mat-icon>
-                    <input matInput type="email" formControlName="email" placeholder="Correo electrónico" [errorStateMatcher]="matcher" />
+          <mat-error *ngIf="form.get('email')?.hasError('required')">
+            El correo es obligatorio
+          </mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email') || form.get('email')?.hasError('pattern')">
+            Formato de correo inválido
+          </mat-error>
+        </mat-form-field>
 
-                    <mat-error *ngIf="form.get('email')?.hasError('required')">
-                        El correo es obligatorio
-                    </mat-error>
-
-                    <mat-error *ngIf="form.get('email')?.hasError('email') || form.get('email')?.hasError('pattern')">
-                        Formato de correo inválido
-                    </mat-error>
-                </mat-form-field>
-
-                <button mat-flat-button class="btn-login" type="submit" [disabled]="loading || form.invalid"
-                    [@fadeInButton]>
-                    <span *ngIf="!loading">Iniciar Sesión</span>
-                    <mat-progress-spinner *ngIf="loading" diameter="24" mode="indeterminate">
-                    </mat-progress-spinner>
-                </button>
-            </form>
-        </div>
-
-        <div class="login-right">
-            <div class="welcome-content">
-                <div class="welcome-image-container" [@fadeInText]>
-                    <img src="assets/note.png" alt="Note Icon" class="note-img">
-                </div>
-
-                <h1 [@fadeInText]>¡Bienvenido!</h1>
-                <p class="typewriter">Accede a tus tareas de manera rápida y sencilla.</p>
-            </div>
-        </div>
-
+        <button mat-flat-button class="btn-login" type="submit" [disabled]="loading || form.invalid">
+          <span>Iniciar Sesión</span>
+        </button>
+      </form>
     </div>
+
+    <div class="login-right">
+      <div class="welcome-content">
+        <div class="welcome-image-container" [@fadeInText]>
+          <img src="assets/note.png" alt="Note Icon" class="note-img" style="width: 100px; margin-bottom: 20px;">
+        </div>
+        <h1 [@fadeInText]>¡Bienvenido!</h1>
+        <p class="typewriter">Accede a tus tareas de manera rápida y sencilla.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-overlay" *ngIf="loading" [@fadeInOut]>
+  <div class="spinner-wrapper">
+    <mat-progress-spinner mode="indeterminate" diameter="60" color="primary"></mat-progress-spinner>
+    <p class="loading-text">Conectando con el servidor...</p>
+    <small style="color: #666;">Esto puede tardar unos segundos si el servidor está hibernando.</small>
+  </div>
 </div>

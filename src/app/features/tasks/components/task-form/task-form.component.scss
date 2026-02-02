@@ -1,127 +1,115 @@
-  .task-container {
-    padding: 20px;
-    display: flex;
-    justify-content: center;
+.task-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.sticky-note {
+  width: 100%;
+  max-width: 450px;
+  min-height: 350px;
+  border-radius: 4px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: background 0.3s ease;
+  position: relative;
+
+  .note-title {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 1.6rem;
+    font-weight: 700;
+    outline: none;
+    margin-bottom: 10px;
+    color: #333;
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.3);
+    }
   }
 
-  .sticky-note {
-    width: 100%;
-    max-width: 450px;
-    min-height: 350px;
-    border-radius: 4px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: background 0.3s ease;
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
 
-    .note-title {
-      width: 100%;
-      border: none;
-      background: transparent;
-      font-size: 1.6rem;
-      font-weight: 700;
-      outline: none;
-      margin-bottom: 10px;
-      color: #333;
+    button { width: 35px; height: 35px; line-height: 35px; }
+    mat-icon { font-size: 20px; color: #555; }
 
-      &::placeholder {
-        color: rgba(0, 0, 0, 0.3);
-      }
-    }
-
-    .toolbar {
+    .color-tool {
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 5px;
-      margin-bottom: 10px;
-
-      button {
-        width: 35px;
-        height: 35px;
-        line-height: 35px;
-      }
-
-      mat-icon {
-        font-size: 20px;
-        color: #555;
-      }
-
-      .color-tool {
-        position: relative;
-        display: flex;
-        align-items: center;
-
-        .text-color-picker {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          opacity: 0;
-          cursor: pointer;
-        }
-      }
-
-      .spacer {
-        flex: 1;
-      }
-
-      .note-colors {
-        display: flex;
-        gap: 8px;
-
-        .dot {
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          cursor: pointer;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-
-          &.yellow {
-            background: #fff9c4;
-          }
-
-          &.blue {
-            background: #e3f2fd;
-          }
-
-          &.green {
-            background: #f1f8e9;
-          }
-        }
+      .text-color-picker {
+        position: absolute;
+        width: 100%; height: 100%;
+        opacity: 0; cursor: pointer;
       }
     }
 
-    .note-editor {
-      min-height: 180px;
-      margin-top: 15px;
-      outline: none;
-      font-size: 1.1rem;
-      line-height: 1.6;
-      color: #444;
+    .spacer { flex: 1; }
 
-      &:empty:before {
-        content: attr(placeholder);
-        color: rgba(0, 0, 0, 0.3);
+    .note-colors {
+      display: flex; gap: 8px;
+      .dot {
+        width: 18px; height: 18px;
+        border-radius: 50%; cursor: pointer;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        &.active { transform: scale(1.2); border: 2px solid #333; }
       }
-    }
-
-    .note-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 20px;
-
-      .btn-save {
-        background: #333;
-        color: white;
-        border-radius: 20px;
-      }
-    }
-
-    .error-snackbar {
-      background-color: #f44336 !important;
-      color: white !important;
-    }
-
-    .success-snackbar {
-      background-color: #4caf50 !important;
-      color: white !important;
     }
   }
+
+  .note-editor {
+    min-height: 180px;
+    margin-top: 15px;
+    outline: none;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #444;
+
+    &:empty:before {
+      content: attr(placeholder);
+      color: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .note-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+
+    .btn-save {
+      background: #333;
+      color: white;
+      border-radius: 20px;
+    }
+  }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  .loading-text {
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+}
