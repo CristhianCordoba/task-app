@@ -8,10 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Task } from '../../../../shared/models/task.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
-/**
- * TaskFormComponent: Gestiona la creación y edición de notas.
- * Implementa un editor de texto enriquecido usando contentEditable.
- */
+
 @Component({
   selector: 'app-task-form',
   standalone: true,
@@ -23,13 +20,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./task-form.component.scss']
 })
 export class TaskFormComponent {
-  // Referencia al elemento HTML que actúa como editor de texto
+  // Referencia al editor 'contenteditable' del HTML
   @ViewChild('editor') editor!: ElementRef;
 
-  /**
-   * Input reactivo: Detecta si recibimos una tarea para editar.
-   * Si hay valor, rellena el formulario; si es null, lo resetea.
-   */
+  // Setter para recibir datos cuando se va a editar una tarea existente
   @Input() set taskData(value: Task | null) {
     if (value) {
       this.isEditing = true;
@@ -41,7 +35,7 @@ export class TaskFormComponent {
       });
       this.selectedNoteColor = value.color || '#fff9c4';
 
-      // Sincroniza el contenido HTML del editor manualmente
+      // Inyectamos el contenido HTML en el editor visual
       if (this.editor) {
         this.editor.nativeElement.innerHTML = value.description || '';
       }
@@ -50,16 +44,18 @@ export class TaskFormComponent {
     }
   }
 
-  // Emisores de eventos para comunicación con el componente padre (Smart Component)
+  // Eventos para comunicar resultados al componente padre
   @Output() submit = new EventEmitter<any>();
   @Output() cancel = new EventEmitter<void>();
 
+  // Propiedades de estado del formulario
   taskForm: FormGroup;
-  selectedNoteColor: string = '#fff9c4'; // Color por defecto de la nota
+  selectedNoteColor: string = '#fff9c4';
   isEditing: boolean = false;
   currentTaskId?: string | number;
 
   constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private snackBar: MatSnackBar) {
+    // Inicialización del formulario reactivo
     this.taskForm = this.fb.group({
       title: ['', Validators.required],
       description: [''],
@@ -67,18 +63,13 @@ export class TaskFormComponent {
     });
   }
 
-  /**
-   * Ejecuta comandos de formato de texto (Negrita, Itálica, etc.)
-   * sobre el área editable.
-   */
+  // Ejecuta comandos de edición de texto enriquecido (Negrita, Itálica, etc.)
   execCommand(command: string, value: string = '') {
     document.execCommand(command, false, value);
     this.updateDescription();
   }
 
-  /**
-   * Sincroniza el contenido del editor HTML con el valor del AbstractControl 'description'
-   */
+  // Sincroniza el contenido del div editable con el valor del formulario
   updateDescription() {
     if (this.editor) {
       const html = this.editor.nativeElement.innerHTML;
@@ -87,8 +78,22 @@ export class TaskFormComponent {
   }
 
   /**
-   * Guarda la tarea validando que el contenido no sea solo espacios en blanco.
+   * MÉTODOS QUE ARREGLAN EL ERROR DE GITHUB
    */
+
+  // Cambia el color del texto seleccionado en el editor
+  changeTextColor(event: Event) {
+    const element = event.target as HTMLInputElement;
+    this.execCommand('foreColor', element.value);
+  }
+
+  // Cambia el color de fondo de la nota (tarjeta)
+  setNoteColor(color: string) {
+    this.selectedNoteColor = color;
+    this.taskForm.patchValue({ color: color });
+  }
+
+  // Lógica para enviar o actualizar la tarea
   saveTask() {
     if (this.taskForm.invalid) {
       this.taskForm.markAllAsTouched();
@@ -98,7 +103,7 @@ export class TaskFormComponent {
 
     const { title, description } = this.taskForm.value;
 
-    // Validación extra de limpieza de datos
+    // Validación extra para evitar contenido vacío o solo espacios
     if (!title?.trim() || !description?.trim()) {
       this.showError('El título y la descripción no pueden estar vacíos');
       return;
@@ -107,7 +112,7 @@ export class TaskFormComponent {
     const taskData = {
       ...this.taskForm.value,
       id: this.currentTaskId,
-      userId: localStorage.getItem('userId') // Asocia la tarea al usuario actual
+      userId: localStorage.getItem('userId') // Asigna el dueño de la tarea
     };
 
     this.submit.emit(taskData);
@@ -119,9 +124,13 @@ export class TaskFormComponent {
     });
   }
 
-  /**
-   * Limpia el formulario y el estado de edición al terminar o cancelar.
-   */
+  // Gestiona la acción de cancelar (limpia y avisa al padre)
+  onCancel() {
+    this.resetForm();
+    this.cancel.emit();
+  }
+
+  // Restablece el formulario a su estado inicial
   private resetForm() {
     this.isEditing = false;
     this.currentTaskId = undefined;
@@ -134,9 +143,11 @@ export class TaskFormComponent {
     if (this.editor) {
       this.editor.nativeElement.innerHTML = '';
     }
-    this.cdr.detectChanges(); // Fuerza la actualización de la vista
+    // Forzamos la detección de cambios para evitar errores de vista
+    this.cdr.detectChanges();
   }
 
+  // Muestra mensajes de error estilizados
   private showError(message: string) {
     this.snackBar.open(message, 'Entendido', {
       duration: 4000,
