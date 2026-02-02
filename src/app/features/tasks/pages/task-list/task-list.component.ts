@@ -12,6 +12,10 @@ import { TaskFormComponent } from '../../components/task-form/task-form.componen
 import { NavbarComponent } from '../../../auth/navbar/navbar.component';
 import { TaskItemComponent } from '../items/task-item.component';
 
+/**
+ * TaskListComponent
+ * Componente principal que actúa como contenedor (Smart Component) para la gestión de tareas.
+ */
 @Component({
   selector: 'app-task-list',
   standalone: true,
@@ -26,9 +30,9 @@ import { TaskItemComponent } from '../items/task-item.component';
 export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
   userEmail: string | null = '';
-  isInitialLoading = true;
-  searchText = '';
-  taskToEdit: Task | null = null;
+  isInitialLoading = true; // Controla la visualización del spinner de carga
+  searchText = ''; // Almacena el valor de búsqueda para el filtrado dinámico
+  taskToEdit: Task | null = null; // Tarea seleccionada actualmente para edición
 
   constructor(
     private taskService: TaskService,
@@ -39,9 +43,10 @@ export class TaskListComponent implements OnInit {
 
   ngOnInit() {
     this.userEmail = localStorage.getItem('userEmail');
-    this.loadTasks();
+    this.loadTasks(); // Carga inicial de datos al montar el componente
   }
 
+  // Getters para segmentar las tareas según su estado de completado
   get pendingTasks() {
     return this.filteredTasks.filter(t => !t.completed);
   }
@@ -50,12 +55,15 @@ export class TaskListComponent implements OnInit {
     return this.filteredTasks.filter(t => t.completed);
   }
 
+  /**
+   * Obtiene todas las tareas del usuario desde el servidor.
+   */
   loadTasks() {
     this.taskService.getAll().subscribe({
       next: (data) => { 
         this.tasks = data; 
         this.isInitialLoading = false; 
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges(); // Notifica cambios a Angular
       },
       error: () => { 
         this.isInitialLoading = false; 
@@ -64,6 +72,9 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  /**
+   * Retorna la lista de tareas filtrada por título o descripción en base a searchText.
+   */
   get filteredTasks() {
     const filter = this.searchText.toLowerCase();
     return this.tasks.filter(t =>
@@ -72,13 +83,19 @@ export class TaskListComponent implements OnInit {
     );
   }
 
+  /**
+   * Maneja el evento de soltar un elemento (Drag and Drop).
+   * Actualiza la UI localmente y sincroniza el cambio de estado con el backend.
+   */
   drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
+      // Reordenamiento dentro de la misma lista
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
+      // Movimiento entre listas (Pendiente <-> Completado)
       const task = event.previousContainer.data[event.previousIndex];
       
-      this.toggleTask(task);
+      this.toggleTask(task); // Sincroniza el cambio de estado con el servidor
 
       transferArrayItem(
         event.previousContainer.data,
@@ -98,6 +115,9 @@ export class TaskListComponent implements OnInit {
     this.searchText = val; 
   }
 
+  /**
+   * Prepara una tarea para su edición y desplaza la vista hacia el formulario.
+   */
   handleEdit(task: Task) {
     this.taskToEdit = { ...task };
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -107,6 +127,9 @@ export class TaskListComponent implements OnInit {
     this.taskToEdit = null;
   }
 
+  /**
+   * Decide si la acción del formulario es una creación o una actualización.
+   */
   handleFormSubmit(taskData: Task) {
     if (this.taskToEdit) {
       this.updateTask(taskData);
@@ -115,6 +138,9 @@ export class TaskListComponent implements OnInit {
     }
   }
 
+  /**
+   * Envía una nueva tarea al backend y la añade al inicio de la lista local.
+   */
   createTask(newTask: Task) {
     this.taskService.create(newTask).subscribe({
       next: (taskCreated) => {
@@ -127,6 +153,9 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  /**
+   * Actualiza una tarea existente y refresca la lista local.
+   */
   updateTask(taskData: Task) {
     this.taskService.update(taskData.id!, taskData).subscribe({
       next: (updated) => {
@@ -138,6 +167,9 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  /**
+   * Cambia el estado de completado de una tarea.
+   */
   toggleTask(task: Task) {
     this.taskService.update(task.id!, { completed: !task.completed }).subscribe({
       next: (updated) => {
@@ -148,11 +180,14 @@ export class TaskListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cambiar estado:', err);
-        this.loadTasks();
+        this.loadTasks(); // Recarga en caso de error para revertir cambios visuales
       }
     });
   }
 
+  /**
+   * Elimina una tarea permanentemente.
+   */
   deleteTask(id: string) {
     this.taskService.delete(id).subscribe({
       next: () => {

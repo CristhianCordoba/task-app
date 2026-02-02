@@ -15,11 +15,17 @@ import { ConfirmRegisterComponent } from './../confirm-register/confirm-register
 import { ChangeDetectorRef } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+
+/**
+ * Manejador personalizado para mostrar errores en los campos de Material
+ * cuando el control es inválido y ha sido tocado o modificado.
+ */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    return !!(control && control.invalid && (control.dirty || control.touched));
-  }
+    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+        return !!(control && control.invalid && (control.dirty || control.touched));
+    }
 }
+
 @Component({
     selector: 'app-login',
     standalone: true,
@@ -36,6 +42,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     ],
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
+    // Definición de animaciones de entrada para los elementos de la UI
     animations: [
         trigger('fadeInCard', [
             transition(':enter', [
@@ -58,7 +65,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
     ]
 })
 export class LoginComponent implements OnInit {
-    matcher = new MyErrorStateMatcher()
+    matcher = new MyErrorStateMatcher();
     loading = false;
     form: FormGroup;
 
@@ -69,6 +76,7 @@ export class LoginComponent implements OnInit {
         private dialog: MatDialog,
         private cdr: ChangeDetectorRef
     ) {
+        // Inicialización del formulario con validaciones de email y patrón RegEx
         this.form = this.fb.group({
             email: ['', [
                 Validators.required,
@@ -82,6 +90,9 @@ export class LoginComponent implements OnInit {
         this.checkSession();
     }
 
+    /**
+     * Verifica si ya existe un token activo para redirigir al dashboard automáticamente.
+     */
     private checkSession() {
         const token = this.authService.getToken();
         if (token) {
@@ -90,6 +101,9 @@ export class LoginComponent implements OnInit {
         }
     }
 
+    /**
+     * Procesa el intento de inicio de sesión.
+     */
     submit() {
         if (this.form.invalid) {
             this.form.markAllAsTouched();
@@ -99,16 +113,19 @@ export class LoginComponent implements OnInit {
         const email = this.form.value.email!.trim();
         this.loading = true;
 
+        // Intenta loguear al usuario
         this.authService.login(email).subscribe({
             next: (res) => {
                 if (res && res.token) {
                     this.completeSession(res.token, res.user.email, res.user.id);
                 } else {
+                    // Si el login no retorna token, se asume que es un usuario nuevo
                     this.handleNewUser(email);
                 }
             },
             error: (err) => {
                 this.loading = false;
+                // Si el servidor retorna 404, iniciamos flujo de registro
                 if (err.status === 404) {
                     this.handleNewUser(email);
                 }
@@ -116,6 +133,9 @@ export class LoginComponent implements OnInit {
         });
     }
 
+    /**
+     * Abre el diálogo de confirmación para registrar a un nuevo usuario.
+     */
     private handleNewUser(email: string) {
         this.loading = false;
         const dialogRef = this.dialog.open(ConfirmRegisterComponent, {
@@ -125,6 +145,7 @@ export class LoginComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
+                // Si el usuario confirma en el modal, se procede al registro
                 this.loading = true;
                 this.authService.register(email).subscribe({
                     next: (res) => {
@@ -137,13 +158,16 @@ export class LoginComponent implements OnInit {
                         this.cdr.detectChanges();
                     }
                 });
-            }else{
+            } else {
                 this.loading = false;
                 this.cdr.detectChanges();
             }
         });
     }
 
+    /**
+     * Guarda las credenciales en almacenamiento local y navega hacia las tareas.
+     */
     private completeSession(token: string, email: string, userId: string) {
         this.authService.saveToken(token, email);
         this.router.navigate(['/tasks']);

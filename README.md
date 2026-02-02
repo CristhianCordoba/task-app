@@ -1,59 +1,45 @@
-# TaskApp
+# TASKS Frontend - Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+## Descripción
+Interfaz de usuario moderna y reactiva construida con **Angular** standalone. Esta aplicación se comunica con el Backend para gestionar tareas en tiempo real, ofreciendo una experiencia de usuario fluida y segura.
 
-## Development server
+## Estructura del Proyecto
+Basado en una arquitectura modular para escalabilidad:
 
-To start a local development server, run:
+- **src/app/core**: Servicios globales (Auth), interceptores y guards de seguridad.
+- **src/app/features**: Módulos funcionales (Login, Registro, Dashboard de Tareas).
+- **src/app/shared**: Modelos de datos y componentes reutilizables.
+- **src/environments**: Configuración de URLs para desarrollo y producción.
 
-```bash
-ng serve
-```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Pipeline de CI/CD (Frontend)
+El despliegue está automatizado con el siguiente flujo de calidad:
 
-## Code scaffolding
+1. **Trigger:** Se activa automáticamente al hacer `push` a la rama `main`.
+2. **Linting:** Se revisa que el código siga las reglas de estilo de Angular.
+3. **Validación (Testing):** Se ejecutan los tests unitarios. El despliegue se detiene si hay fallos.
+4. **Optimización (Build):** Se ejecuta `ng build --configuration production` para generar archivos estáticos ligeros.
+5. **Deployment:** Se sirven los archivos a través de un servidor de contenido estático en **Render**.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
 
-```bash
-ng generate component component-name
-```
+## Configuración de Entornos
+Asegúrate de configurar la URL del API en los archivos de entorno:
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+**src/environments/environment.prod.ts**:
+export const environment = {
+  production: true,
+  apiUrl: 'tu Api'
+};
 
-```bash
-ng generate --help
-```
+## Comandos del Proyecto
+# Instalación
+    npm install
 
-## Building
+# Desarrollo (Local)
+    npm start
 
-To build the project run:
+# Ejecución de Tests
+    npm test
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+# Compilación para Producción
+    npm run build
