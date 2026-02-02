@@ -1,0 +1,39 @@
+<div class="login-container">
+    <div class="login-box" [@fadeInCard]>
+
+        <div class="login-left">
+            <div class="header-text">
+                <h2>Hola!</h2>
+                <p>Inicia sesión en tu cuenta</p>
+            </div>
+
+            <form [formGroup]="form" (ngSubmit)="submit()">
+                <mat-form-field appearance="outline" class="full-width custom-input">
+                    <mat-icon matPrefix>mail_outline</mat-icon>
+                    <input matInput type="email" formControlName="email" placeholder="Correo electrónico" />
+                    <mat-error *ngIf="form.get('email')?.hasError('required')">El correo es obligatorio</mat-error>
+                    <mat-error *ngIf="form.get('email')?.hasError('email')">Formato inválido</mat-error>
+                </mat-form-field>
+
+                <button mat-flat-button class="btn-login" type="submit" [disabled]="loading || form.invalid"
+                    [@fadeInButton]>
+                    <span *ngIf="!loading">Iniciar Sesión</span>
+                    <mat-progress-spinner *ngIf="loading" diameter="24" mode="indeterminate">
+                    </mat-progress-spinner>
+                </button>
+            </form>
+        </div>
+
+        <div class="login-right">
+            <div class="welcome-content">
+                <div class="welcome-image-container" [@fadeInText]>
+                    <img src="assets/note.png" alt="Note Icon" class="note-img">
+                </div>
+
+                <h1 [@fadeInText]>¡Bienvenido!</h1>
+                <p class="typewriter">Accede a tus tareas de manera rápida y sencilla.</p>
+            </div>
+        </div>
+
+    </div>
+</div>

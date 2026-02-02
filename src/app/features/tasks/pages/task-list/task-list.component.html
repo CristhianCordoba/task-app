@@ -1,0 +1,78 @@
+<div class="loading-overlay" *ngIf="isInitialLoading">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>
+
+<app-navbar 
+  [email]="userEmail" 
+  (logout)="handleLogout()" 
+  (search)="handleSearch($event)">
+</app-navbar>
+
+<div class="dashboard">
+  <aside class="sidebar">
+    <div class="sticky-sidebar">
+      <h2 class="section-header create">
+        <mat-icon>{{ taskToEdit ? 'edit' : 'add_circle_outline' }}</mat-icon>
+        {{ taskToEdit ? 'Editar Nota' : 'Nueva Nota' }}
+      </h2>
+
+      <app-task-form 
+        [taskData]="taskToEdit" 
+        (submit)="handleFormSubmit($event)" 
+        (cancel)="cancelEdit()">
+      </app-task-form>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="columns" cdkDropListGroup *ngIf="!isInitialLoading">
+      
+      <section class="col">
+        <h2 class="section-header pending">
+          <mat-icon>push_pin</mat-icon> Pendientes
+        </h2>
+        
+        <div
+          cdkDropList
+          [cdkDropListData]="pendingTasks"
+          (cdkDropListDropped)="drop($event)"
+          class="task-list-container">
+          
+          <div *ngFor="let task of pendingTasks" cdkDrag>
+            <app-task-item 
+              [task]="task" 
+              (toggle)="toggleTask($event)"
+              (delete)="deleteTask($event)"
+              (edit)="handleEdit($event)">
+            </app-task-item>
+            <div class="drag-placeholder" *cdkDragPlaceholder></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="col">
+        <h2 class="section-header completed">
+          <mat-icon>check_circle</mat-icon> Completadas
+        </h2>
+
+        <div
+          cdkDropList
+          [cdkDropListData]="completedTasks"
+          (cdkDropListDropped)="drop($event)"
+          class="task-list-container">
+          
+          <div *ngFor="let task of completedTasks" cdkDrag>
+            <app-task-item 
+              [task]="task" 
+              (toggle)="toggleTask($event)"
+              (delete)="deleteTask($event)"
+              (edit)="handleEdit($event)">
+            </app-task-item>
+            <div class="drag-placeholder" *cdkDragPlaceholder></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>

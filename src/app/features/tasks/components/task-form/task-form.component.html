@@ -1,0 +1,73 @@
+<div class="task-container">
+  <mat-card class="sticky-note" [style.background-color]="selectedNoteColor">
+    <form [formGroup]="taskForm" (ngSubmit)="saveTask()">
+
+      <input type="text" formControlName="title" class="note-title" placeholder="Título de la tarea" />
+
+      <div class="toolbar">
+        <button type="button" mat-icon-button (click)="execCommand('bold')" matTooltip="Negrita">
+          <mat-icon>format_bold</mat-icon>
+        </button>
+        <button type="button" mat-icon-button (click)="execCommand('italic')" matTooltip="Cursiva">
+          <mat-icon>format_italic</mat-icon>
+        </button>
+        <div class="color-tool">
+          <mat-icon>palette</mat-icon>
+          <input type="color" (change)="changeTextColor($event)" class="text-color-picker">
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="note-colors">
+          <div class="dot" 
+               (click)="setNoteColor('#FFF9DB')" 
+               [class.active]="selectedNoteColor === '#FFF9DB'"
+               style="background-color: #FFF9DB"></div>
+          <div class="dot" 
+               (click)="setNoteColor('#E7F5FF')" 
+               [class.active]="selectedNoteColor === '#E7F5FF'"
+               style="background-color: #E7F5FF"></div>
+          <div class="dot" 
+               (click)="setNoteColor('#EBFBEE')" 
+               [class.active]="selectedNoteColor === '#EBFBEE'"
+               style="background-color: #EBFBEE"></div>
+          <div class="dot" 
+               (click)="setNoteColor('#F3F0FF')" 
+               [class.active]="selectedNoteColor === '#F3F0FF'"
+               style="background-color: #F3F0FF"></div>
+          <div class="dot" 
+               (click)="setNoteColor('#FFF0F6')" 
+               [class.active]="selectedNoteColor === '#FFF0F6'"
+               style="background-color: #FFF0F6"></div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div #editor 
+           contenteditable="true" 
+           class="note-editor" 
+           (input)="updateDescription()"
+           placeholder="Escribe los detalles aquí...">
+      </div>
+
+      <div class="note-actions">
+        <button *ngIf="isEditing" 
+                mat-button 
+                type="button" 
+                (click)="onCancel()" 
+                class="btn-cancel">
+          Cancelar
+        </button>
+
+        <button mat-flat-button 
+                class="btn-save" 
+                type="submit" 
+                [disabled]="taskForm.invalid">
+          <mat-icon>{{ isEditing ? 'update' : 'add' }}</mat-icon>
+          {{ isEditing ? 'Actualizar Nota' : 'Guardar Tarea' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

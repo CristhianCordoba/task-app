@@ -1,0 +1,21 @@
+<div class="modal-wrapper">
+  <div class="icon-container">
+    <mat-icon>person_add</mat-icon>
+  </div>
+  
+  <h2 mat-dialog-title>¿Eres nuevo por aquí?</h2>
+  
+  <mat-dialog-content>
+    <p>No encontramos una cuenta asociada a este correo electrónico.</p>
+    <p class="highlight">¿Te gustaría crear una cuenta nueva ahora mismo?</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="center">
+    <button mat-button class="btn-cancel" (click)="onCancel()">
+      No, gracias
+    </button>
+    <button mat-flat-button class="btn-confirm" (click)="onConfirm()">
+      Sí, crear cuenta
+    </button>
+  </mat-dialog-actions>
+</div>
