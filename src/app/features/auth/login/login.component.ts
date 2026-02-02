@@ -13,7 +13,13 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmRegisterComponent } from './../confirm-register/confirm-register.component';
 import { ChangeDetectorRef } from '@angular/core';
-
+import { ErrorStateMatcher } from '@angular/material/core';
+import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
+}
 @Component({
     selector: 'app-login',
     standalone: true,
@@ -53,6 +59,7 @@ import { ChangeDetectorRef } from '@angular/core';
     ]
 })
 export class LoginComponent implements OnInit {
+    matcher = new MyErrorStateMatcher()
     loading = false;
     form: FormGroup;
 
