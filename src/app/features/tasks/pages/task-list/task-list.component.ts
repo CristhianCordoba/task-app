@@ -10,8 +10,10 @@ import { Task } from '../../../../shared/models/task.model';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TaskFormComponent } from '../../components/task-form/task-form.component';
 import { NavbarComponent } from '../../../auth/navbar/navbar.component';
+import { LogoutConfirmationComponent } from '../../../auth/navbar/logout-confirmation.component';
 import { TaskItemComponent } from '../items/task-item.component';
-
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteConfirmationComponent } from '../../../../shared/components/delete-Confirmation.component';
 /**
  * TaskListComponent
  * Componente principal que actúa como contenedor (Smart Component) para la gestión de tareas.
@@ -38,7 +40,8 @@ export class TaskListComponent implements OnInit {
     private taskService: TaskService,
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -59,15 +62,17 @@ export class TaskListComponent implements OnInit {
    * Obtiene todas las tareas del usuario desde el servidor.
    */
   loadTasks() {
+    this.isInitialLoading = true;
+    this.cdr.detectChanges();
     this.taskService.getAll().subscribe({
-      next: (data) => { 
-        this.tasks = data; 
-        this.isInitialLoading = false; 
-        this.cdr.detectChanges(); // Notifica cambios a Angular
+      next: (data) => {
+        this.tasks = data;
+        this.isInitialLoading = false;
+        this.cdr.detectChanges();
       },
-      error: () => { 
-        this.isInitialLoading = false; 
-        this.cdr.detectChanges(); 
+      error: () => {
+        this.isInitialLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -94,7 +99,7 @@ export class TaskListComponent implements OnInit {
     } else {
       // Movimiento entre listas (Pendiente <-> Completado)
       const task = event.previousContainer.data[event.previousIndex];
-      
+
       this.toggleTask(task); // Sincroniza el cambio de estado con el servidor
 
       transferArrayItem(
@@ -106,13 +111,22 @@ export class TaskListComponent implements OnInit {
     }
   }
 
-  handleLogout() { 
-    this.authService.logout(); 
-    this.router.navigate(['/login']); 
+  handleLogout() {
+    const dialogRef = this.dialog.open(LogoutConfirmationComponent, {
+      width: '350px',
+      disableClose: false,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      }
+    });
   }
 
-  handleSearch(val: string) { 
-    this.searchText = val; 
+  handleSearch(val: string) {
+    this.searchText = val;
   }
 
   /**
@@ -189,12 +203,21 @@ export class TaskListComponent implements OnInit {
    * Elimina una tarea permanentemente.
    */
   deleteTask(id: string) {
-    this.taskService.delete(id).subscribe({
-      next: () => {
-        this.tasks = this.tasks.filter(t => t.id !== id);
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error al eliminar:', err)
+    const dialogRef = this.dialog.open(DeleteConfirmationComponent, {
+      width: '350px',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.taskService.delete(id).subscribe({
+          next: () => {
+            this.tasks = this.tasks.filter(t => t.id !== id);
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error('Error al eliminar:', err)
+        });
+      }
     });
   }
 }
