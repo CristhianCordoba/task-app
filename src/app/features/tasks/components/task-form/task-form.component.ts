@@ -7,12 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Task } from '../../../../shared/models/task.model';
-
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-task-form',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatCardModule, 
+    CommonModule, ReactiveFormsModule, MatCardModule,
     MatButtonModule, MatIconModule, MatDividerModule, MatTooltipModule
   ],
   templateUrl: './task-form.component.html',
@@ -20,7 +20,7 @@ import { Task } from '../../../../shared/models/task.model';
 })
 export class TaskFormComponent {
   @ViewChild('editor') editor!: ElementRef;
-  
+
   @Input() set taskData(value: Task | null) {
     if (value) {
       this.isEditing = true;
@@ -31,7 +31,7 @@ export class TaskFormComponent {
         color: value.color
       });
       this.selectedNoteColor = value.color || '#fff9c4';
-      
+
       if (this.editor) {
         this.editor.nativeElement.innerHTML = value.description || '';
       }
@@ -48,7 +48,7 @@ export class TaskFormComponent {
   isEditing: boolean = false;
   currentTaskId?: string | number;
 
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private snackBar: MatSnackBar) {
     this.taskForm = this.fb.group({
       title: ['', Validators.required],
       description: [''],
@@ -81,6 +81,14 @@ export class TaskFormComponent {
   saveTask() {
     if (this.taskForm.invalid) {
       this.taskForm.markAllAsTouched();
+      this.showError('Por favor, completa los campos requeridos');
+      return;
+    }
+
+    const { title, description } = this.taskForm.value;
+
+    if (!title?.trim() || !description?.trim()) {
+      this.showError('El título y la descripción no pueden estar vacíos');
       return;
     }
 
@@ -92,6 +100,11 @@ export class TaskFormComponent {
 
     this.submit.emit(taskData);
     this.resetForm();
+
+    this.snackBar.open('¡Nota guardada con éxito!', 'Cerrar', {
+      duration: 3000,
+      panelClass: ['success-snackbar']
+    });
   }
 
   onCancel() {
@@ -112,5 +125,14 @@ export class TaskFormComponent {
       this.editor.nativeElement.innerHTML = '';
     }
     this.cdr.detectChanges();
+  }
+
+  private showError(message: string) {
+    this.snackBar.open(message, 'Entendido', {
+      duration: 4000,
+      verticalPosition: 'bottom',
+      horizontalPosition: 'center',
+      panelClass: ['error-snackbar']
+    });
   }
 }

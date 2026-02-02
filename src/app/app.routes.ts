@@ -14,7 +14,12 @@ export const routes: Routes = [
     loadChildren: () => TASKS_ROUTES
   },
   {
+    path: '',
+    redirectTo: 'tasks',
+    pathMatch: 'full'
+  },
+  {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: 'tasks'
   }
 ];

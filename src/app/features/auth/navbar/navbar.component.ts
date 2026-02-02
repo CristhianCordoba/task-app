@@ -44,6 +44,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       height: 70px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
       padding: 0 16px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
     }
 
     .brand { 
@@ -54,6 +62,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       font-size: 1.4rem; 
       color: #4fc3f7; 
       text-transform: uppercase;
+      flex-shrink: 0;
     }
 
     .spacer { flex: 1; }
@@ -88,6 +97,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       display: flex; 
       align-items: center; 
       gap: 10px; 
+      flex-shrink: 0;
     }
 
     .user-chip { 
@@ -104,38 +114,23 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       border-radius: 10px;
       min-width: 40px;
       padding: 0 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     @media (max-width: 800px) {
-      .search-container {
-        display: none;
-      }
+      .search-container { display: none; }
     }
 
     @media (max-width: 600px) {
-      .brand-text, 
-      .user-email, 
-      .btn-text {
-        display: none;
-      }
-
-      .user-chip {
-        padding: 8px;
-      }
-
-      .logout-btn {
-        padding: 0;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-      }
-      
-      .navbar {
-        gap: 8px;
-        padding: 0 8px;
+      .navbar { height: 60px; padding: 0 12px; }
+      .brand-text, .user-email, .btn-text { display: none; }
+      .brand { font-size: 1.1rem; }
+      .user-chip { padding: 8px; background: transparent; }
+      .logout-btn { 
+        padding: 0; 
+        min-width: 40px !important; 
+        width: 40px; 
+        height: 40px; 
+        border-radius: 50%; 
       }
     }
   `]

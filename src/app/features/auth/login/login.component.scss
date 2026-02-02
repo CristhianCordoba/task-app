@@ -3,7 +3,12 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  width: 100vw;
   background-color: #e3f2fd;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2000;
 }
 
 .login-box {
@@ -32,7 +37,7 @@
 
   .custom-input {
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     
     ::ng-deep .mat-mdc-text-field-wrapper {
       background-color: #fff !important;
@@ -44,18 +49,15 @@
         padding: 0 20px !important;
     }
 
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-        font-size: 11px;
-    }
-
     mat-icon { color: #4fc3f7; }
   }
 
   .btn-login {
-    width: 180px;
+    width: 100%;
+    max-width: 250px;
     margin: 20px auto 0;
     display: block;
-    height: 45px;
+    height: 50px;
     border-radius: 25px;
     background: linear-gradient(to right, #4fc3f7, #2196f3);
     color: white;
@@ -76,61 +78,22 @@
   text-align: center;
 
   .welcome-content {
-    .welcome-image-container {
-      margin-bottom: 25px;
-      .note-img {
-        width: 120px;
-        height: auto;
-        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
-        animation: float 4s ease-in-out infinite;
-      }
-    }
-
     h1 { font-size: 3rem; margin-bottom: 15px; font-weight: 600; }
     p { font-size: 1.1rem; line-height: 1.5; opacity: 0.9; }
   }
 }
 
-.typewriter {
-  overflow: hidden;
-  border-right: .15em solid white;
-  white-space: nowrap;
-  margin: 0 auto;
-  letter-spacing: .05em;
-  animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-}
-
-@keyframes typing { from { width: 0 } to { width: 100% } }
-@keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: white; } }
-
 @media (max-width: 768px) {
   .login-box {
-    width: 90%;
-    max-width: 450px;
+    width: 92%;
+    max-width: 400px;
     height: auto;
-    min-height: 450px;
+    min-height: 480px;
     border-radius: 30px;
   }
-
-  .login-right {
-    display: none;
-  }
-
-  .login-left {
+  .login-right { display: none; }
+  .login-left { 
+    padding: 40px 25px; 
     flex: 1;
-    padding: 40px;
-    
-    .header-text h2 {
-      font-size: 2.2rem;
-    }
-
-    form {
-      width: 100%;
-    }
   }
 }

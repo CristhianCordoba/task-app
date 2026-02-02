@@ -128,6 +128,9 @@ export class LoginComponent implements OnInit {
                     },
                     error: () => this.loading = false
                 });
+            }else{
+                this.loading = false;
+                this.cdr.detectChanges();
             }
         });
     }
