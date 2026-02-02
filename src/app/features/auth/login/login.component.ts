@@ -32,8 +32,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
         MatButtonModule,
         MatProgressSpinnerModule,
         MatIconModule,
-        MatDialogModule,
-        ConfirmRegisterComponent
+        MatDialogModule
     ],
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
@@ -133,7 +132,10 @@ export class LoginComponent implements OnInit {
                             this.completeSession(res.token, res.user.email, res.user.id);
                         }
                     },
-                    error: () => this.loading = false
+                    error: () => {
+                        this.loading = false;
+                        this.cdr.detectChanges();
+                    }
                 });
             }else{
                 this.loading = false;
