@@ -14,6 +14,8 @@ import { LogoutConfirmationComponent } from '../../../auth/navbar/logout-confirm
 import { TaskItemComponent } from '../items/task-item.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteConfirmationComponent } from '../../../../shared/components/delete-Confirmation.component';
+import { NgZone } from '@angular/core';
+
 /**
  * TaskListComponent
  * Componente principal que actúa como contenedor (Smart Component) para la gestión de tareas.
@@ -24,7 +26,7 @@ import { DeleteConfirmationComponent } from '../../../../shared/components/delet
   imports: [
     CommonModule, TaskFormComponent, NavbarComponent, TaskItemComponent,
     MatProgressSpinnerModule, MatDividerModule, MatIconModule,
-    DragDropModule // Módulo vital para arrastrar y soltar
+    DragDropModule 
   ],
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss']
@@ -32,24 +34,24 @@ import { DeleteConfirmationComponent } from '../../../../shared/components/delet
 export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
   userEmail: string | null = '';
-  isInitialLoading = true; // Controla la visualización del spinner de carga
-  searchText = ''; // Almacena el valor de búsqueda para el filtrado dinámico
-  taskToEdit: Task | null = null; // Tarea seleccionada actualmente para edición
+  isInitialLoading = true; 
+  searchText = ''; 
+  taskToEdit: Task | null = null; 
 
   constructor(
     private taskService: TaskService,
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private zone: NgZone
   ) { }
 
   ngOnInit() {
     this.userEmail = localStorage.getItem('userEmail');
-    this.loadTasks(); // Carga inicial de datos al montar el componente
+    this.loadTasks(); 
   }
 
-  // Getters para segmentar las tareas según su estado de completado
   get pendingTasks() {
     return this.filteredTasks.filter(t => !t.completed);
   }
@@ -79,13 +81,18 @@ export class TaskListComponent implements OnInit {
 
   /**
    * Retorna la lista de tareas filtrada por título o descripción en base a searchText.
+   * Adicionalmente oculta la tarea que se está editando actualmente.
    */
   get filteredTasks() {
     const filter = this.searchText.toLowerCase();
-    return this.tasks.filter(t =>
-      t.title.toLowerCase().includes(filter) ||
-      t.description?.toLowerCase().includes(filter)
-    );
+    return this.tasks.filter(t => {
+      // Validar si es la tarea en edición para ocultarla
+      const isEditing = this.taskToEdit && t.id === this.taskToEdit.id;
+      if (isEditing) return false;
+
+      return t.title.toLowerCase().includes(filter) ||
+             t.description?.toLowerCase().includes(filter);
+    });
   }
 
   /**
@@ -94,13 +101,10 @@ export class TaskListComponent implements OnInit {
    */
   drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer === event.container) {
-      // Reordenamiento dentro de la misma lista
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      // Movimiento entre listas (Pendiente <-> Completado)
       const task = event.previousContainer.data[event.previousIndex];
-
-      this.toggleTask(task); // Sincroniza el cambio de estado con el servidor
+      this.toggleTask(task); 
 
       transferArrayItem(
         event.previousContainer.data,
@@ -134,11 +138,13 @@ export class TaskListComponent implements OnInit {
    */
   handleEdit(task: Task) {
     this.taskToEdit = { ...task };
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.cdr.detectChanges();
+    this.goToTop();
   }
 
   cancelEdit() {
     this.taskToEdit = null;
+    this.cdr.detectChanges();
   }
 
   /**
@@ -194,7 +200,7 @@ export class TaskListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cambiar estado:', err);
-        this.loadTasks(); // Recarga en caso de error para revertir cambios visuales
+        this.loadTasks(); 
       }
     });
   }
@@ -220,4 +226,14 @@ export class TaskListComponent implements OnInit {
       }
     });
   }
+
+  /**
+  * Ir a incio
+  */
+  goToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
+
 }
